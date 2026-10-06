@@ -10,6 +10,12 @@ HEADER   :: "===================TCC==================="
 BOLD_SEP :: "================================================" // len = 48
 LINE_SEP :: "------------------------------------------------"
 
+// sizeof table columns
+COL0 :: 48 // total width of table
+COL1 :: 8 
+COL2 :: 20
+COL3 :: 20
+
 is_valid_tcard :: proc(data: ^Raw_Tcard) -> (ok: bool) {
     for week in data {
         for day in week {
@@ -31,6 +37,7 @@ scan_files :: proc(opt: ^Options) {
     if opt.mult < 1 do opt.mult = DEFAULT_OT_MULTIPLIER
 
     for path in opt.overflow {
+        // print header and footer
         fmt.println(BOLD_SEP)
         defer fmt.println(BOLD_SEP)
         // load the file
@@ -65,6 +72,8 @@ scan_files :: proc(opt: ^Options) {
         extract_times(json_data^, timecard)
         if !opt.disable_ot do check_overtime(timecard)
 
+        print_json_data(json_data)
+        fmt.println(build_sep('-', COL0))
         print_tc_table(timecard)
     }
 }
@@ -75,12 +84,25 @@ build_sep :: proc(c: byte, n: int) -> (string) {
     return strings.to_string(sb)
 }
 
+print_json_data :: proc(data: ^Raw_Tcard) {
+  for week, w in data {
+    fmt.printfln("Week %d:", w + 1)
+    for day, d in week {
+      fmt.printfln("\tDay %d:", d + 1)
+      for time, t in day {
+        switch {
+        case t == 0 || t % 2 == 0:
+          fmt.print("\t\t IN: ")
+        case:
+          fmt.print("\t\tOUT: ")
+        }
+        fmt.printfln("%s", time)
+      }
+    }
+  }
+}
+
 print_tc_table :: proc(tc: ^Tcard) {
-    // sizeof table columns
-    COL0 :: 48 // total width of table
-    COL1 :: 8 
-    COL2 :: 20
-    COL3 :: 20
     tbl :: struct {
         header:    [1]afmt.Column(afmt.A24),
         ln_sep:    [1]afmt.Column(afmt.A24),
