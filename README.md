@@ -2,5 +2,12 @@
 
 It reads time cards, counts hours, and calculates gross pay.
 
+## Build Dependencies
+
+- odin-lang/Odin
+- OnlyXuul/afmt
+
+### Info
+
 Time card format is: `[][7][]string`
 Week -> Day -> List of clock in/out times
