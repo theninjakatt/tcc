@@ -1,7 +1,5 @@
 package tcc
 
-import "core:fmt"
-
 DEFAULT_OT_MULTIPLIER :: 1.5
 DEFAULT_OT_LIMIT :: 40
 

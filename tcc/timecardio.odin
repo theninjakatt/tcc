@@ -128,7 +128,7 @@ print_tc_table :: proc(tc: ^Tcard) {
     afmt.printrow(tbl.header, "SUMMARY")
     afmt.printrow(tbl.ln_sep, build_sep('-', COL0))
     afmt.printrow(tbl.col_label, "", "TIME (HH:MM)", "PAY $")
-    for week, w in tc.Weeks {
+    for _, w in tc.Weeks {
         current := tc.Weeks[w]
         afmt.printrow(
             tbl.col_data, 
