@@ -7,7 +7,8 @@ import "core:flags"
 Options :: struct {
     rate: f64 `args:"name=r,required" usage:"Hourly wage"`,
     mult: f64 `args:"name=m" usage:"Overtime wage multiplier (Default = 1.5)"`,
-    disable_ot: bool `args:"name=not" usage:"Toggle overtime (Default = ON)"`,
+    verbose: bool `args:"name=v" usage:"Display timecard data (Default = false)"`,
+    disable_ot: bool `args:"name=not" usage:"Toggle overtime (Default = false)"`,
     overflow: [dynamic]string `usage:"String path to file(s)"`,
 }
 

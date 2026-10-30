@@ -37,6 +37,7 @@ scan_files :: proc(opt: ^Options) {
     if opt.mult < 1 do opt.mult = DEFAULT_OT_MULTIPLIER
 
     for path in opt.overflow {
+	if !os.is_file(path) do continue
         // print header and footer
         fmt.println(BOLD_SEP)
         defer fmt.println(BOLD_SEP)
@@ -72,7 +73,7 @@ scan_files :: proc(opt: ^Options) {
         extract_times(json_data^, timecard)
         if !opt.disable_ot do check_overtime(timecard)
 
-        print_json_data(json_data)
+	if opt.verbose do print_json_data(json_data)
         fmt.println(build_sep('-', COL0))
         print_tc_table(timecard)
     }
@@ -126,19 +127,19 @@ print_tc_table :: proc(tc: ^Tcard) {
     afmt.printrow(tbl.ln_sep, build_sep('-', COL0))
     afmt.printrow(tbl.header, "SUMMARY")
     afmt.printrow(tbl.ln_sep, build_sep('-', COL0))
-    afmt.printrow(tbl.col_label, "", "TIME", "PAY $")
+    afmt.printrow(tbl.col_label, "", "TIME (HH:MM)", "PAY $")
     for week, w in tc.Weeks {
         current := tc.Weeks[w]
         afmt.printrow(
             tbl.col_data, 
             fmt.tprintf("Week %d", w + 1),
-            afmt.tprintf("%.3f", current.Hours), 
+            afmt.tprintf("%.3f (%s)", current.Hours, f64_to_strtime(current.Hours)), 
             afmt.tprintf("%.3f", current.Hours * tc.Rate), 
         )
         if current.Overtime > 0 do afmt.printrow(
             tbl.col_data, 
             "  OT",
-            afmt.tprintf("%.3f", current.Overtime), 
+            afmt.tprintf("%.3f (%s)", current.Overtime, f64_to_strtime(current.Overtime)), 
             afmt.tprintf("%.3f", current.Overtime * tc.Rate * tc.Mult), 
         )
     }
@@ -152,7 +153,7 @@ print_tc_table :: proc(tc: ^Tcard) {
     afmt.printrow(
         tbl.col_data,
         "TOTAL", 
-        fmt.tprintf("%.3f", tc.Total_Hours),
+        fmt.tprintf("%.3f (%s)", tc.Total_Hours, f64_to_strtime(tc.Total_Hours)),
         fmt.tprintf("%.3f", total_pay),
     )
 }

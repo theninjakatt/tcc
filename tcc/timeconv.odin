@@ -1,6 +1,8 @@
 package tcc
 
 import "core:strconv"
+import "core:strings"
+import "core:math"
 
 Error :: enum {
     None,
@@ -10,6 +12,20 @@ Error :: enum {
     OutOfBoundsHour,
     InvalidMinuteType,
     InvalidHourType,
+}
+
+f64_to_strtime :: proc(float: f64) -> (strtime: string) {
+    // sep fraction from whole
+    whole, fraction : f64 = math.modf(float)
+    // convert fraction to minutes
+    minutes : f64 = fraction * 60
+    // build string 
+    sb := strings.builder_make()
+    strings.write_float(&sb, whole, 'f', 0, 64)
+    strings.write_byte(&sb, ':')
+    strings.write_float(&sb, minutes, 'f', 0, 64)
+    strtime = strings.to_string(sb)
+    return strtime
 }
 
 strtime_to_f64 :: proc(data: string) -> (dtime: f64, err: Error) {
